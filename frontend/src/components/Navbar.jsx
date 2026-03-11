@@ -1,10 +1,11 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 function BrandMark() {
   return (
     <svg
       viewBox="0 0 48 48"
-      className="h-10 w-10 rounded-xl bg-white p-1.5 shadow-soft"
+      className="h-10 w-10 rounded-xl border border-blue-100 bg-[linear-gradient(180deg,#ffffff_0%,#f2f8ff_100%)] p-1.5 shadow-soft"
       aria-hidden="true"
     >
       <defs>
@@ -23,38 +24,58 @@ function BrandMark() {
 }
 
 export function Navbar() {
+  const navigate = useNavigate();
+  const { isAuthenticated, logout } = useAuth();
+
   const linkClass = ({ isActive }) =>
     `rounded-full px-4 py-2 text-sm font-semibold transition ${
       isActive
-        ? "bg-medical-primary text-white shadow-soft"
+        ? "bg-[linear-gradient(135deg,#2f80ed_0%,#1e67c5_100%)] text-white shadow-[0_12px_24px_-16px_rgba(30,103,197,0.85)]"
         : "text-slate-600 hover:bg-white hover:text-medical-primary"
     }`;
 
   return (
-    <header className="animate-reveal-soft fixed inset-x-0 top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="animate-reveal-soft fixed inset-x-0 top-0 z-30 px-2 pt-2 sm:px-4">
+      <div className="glass-surface premium-outline mx-auto flex h-20 w-full max-w-7xl items-center justify-between rounded-2xl border border-slate-200/70 px-4 sm:px-6 lg:px-8">
         <Link to="/" className="interactive-lift flex items-center gap-3 rounded-2xl px-2 py-1">
           <BrandMark />
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-medical-primary">
-              Clinical AI Platform
+              MedInsight AI
             </p>
             <p className="text-base font-bold text-slate-800">
-              Readmission Risk System
+              Smart Clinical Decision Support
             </p>
           </div>
         </Link>
 
-        <nav className="interactive-lift flex items-center gap-2 rounded-full bg-medical-surface p-1.5">
-          <NavLink to="/" className={linkClass} end>
-            Home
-          </NavLink>
-          <NavLink to="/predict" className={linkClass}>
-            Patient Assessment
-          </NavLink>
-          <NavLink to="/results" className={linkClass}>
-            Risk Dashboard
-          </NavLink>
+        <nav className="interactive-lift no-scrollbar flex max-w-[55vw] items-center gap-2 overflow-x-auto rounded-full border border-blue-100 bg-[linear-gradient(135deg,#f6fbff_0%,#eaf5ff_100%)] p-1.5 sm:max-w-none">
+          {isAuthenticated ? (
+            <>
+              <NavLink to="/app/dashboard" className={linkClass}>
+                Dashboard
+              </NavLink>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  navigate("/", { replace: true });
+                }}
+                className="rounded-full px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-white hover:text-medical-primary"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink to="/login" className={linkClass}>
+                Login
+              </NavLink>
+              <NavLink to="/login" className={linkClass}>
+                Sign In
+              </NavLink>
+            </>
+          )}
         </nav>
       </div>
     </header>

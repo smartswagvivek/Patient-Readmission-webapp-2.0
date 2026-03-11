@@ -34,9 +34,16 @@ const validationMiddleware = [
     .isInt({ min: 0 })
     .withMessage("number_inpatient must be a non-negative integer")
     .toInt(),
-  body("diabetesMed")
+  body("primary_diagnosis")
     .exists()
-    .withMessage("diabetesMed is required")
+    .withMessage("primary_diagnosis is required")
+    .isString()
+    .withMessage("primary_diagnosis must be a string")
+    .trim()
+    .isLength({ min: 2, max: 120 })
+    .withMessage("primary_diagnosis must be between 2 and 120 characters"),
+  body("diabetesMed")
+    .optional()
     .isIn(["Yes", "No"])
     .withMessage("diabetesMed must be Yes or No"),
 ];

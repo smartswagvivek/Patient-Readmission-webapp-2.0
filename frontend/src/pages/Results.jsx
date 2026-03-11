@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { CalendarClock, ClipboardList, Stethoscope } from "lucide-react";
 import { RecommendationCard } from "../components/RecommendationCard.jsx";
 import { RiskCard } from "../components/RiskCard.jsx";
 import { downloadResultPdf } from "../lib/resultPdf.js";
@@ -56,13 +57,13 @@ function parseSimilarity(caseItem) {
 function DashboardSkeleton() {
   return (
     <div className="grid gap-6">
-      <div className="h-64 animate-pulse rounded-3xl border border-slate-200 bg-white" />
+      <div className="h-64 animate-pulse rounded-3xl border border-blue-100 bg-[linear-gradient(165deg,#ffffff_0%,#f6fbff_100%)]" />
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="h-48 animate-pulse rounded-3xl border border-slate-200 bg-white" />
-        <div className="h-48 animate-pulse rounded-3xl border border-slate-200 bg-white" />
+        <div className="h-48 animate-pulse rounded-3xl border border-blue-100 bg-[linear-gradient(165deg,#ffffff_0%,#f6fbff_100%)]" />
+        <div className="h-48 animate-pulse rounded-3xl border border-blue-100 bg-[linear-gradient(165deg,#ffffff_0%,#f6fbff_100%)]" />
       </div>
-      <div className="h-60 animate-pulse rounded-3xl border border-slate-200 bg-white" />
-      <div className="h-72 animate-pulse rounded-3xl border border-slate-200 bg-white" />
+      <div className="h-60 animate-pulse rounded-3xl border border-blue-100 bg-[linear-gradient(165deg,#ffffff_0%,#f6fbff_100%)]" />
+      <div className="h-72 animate-pulse rounded-3xl border border-blue-100 bg-[linear-gradient(165deg,#ffffff_0%,#f6fbff_100%)]" />
     </div>
   );
 }
@@ -111,6 +112,10 @@ export function Results() {
   const similarCases = Array.isArray(safeResult.similar_cases)
     ? safeResult.similar_cases.filter((item) => item && typeof item === "object")
     : [];
+  const completedAtText = completedAt
+    ? new Date(completedAt).toLocaleString()
+    : "Not available";
+  const diagnosisText = safeResult.primary_diagnosis || input?.primary_diagnosis || "Unknown";
 
   function handleDownloadPdf() {
     try {
@@ -135,7 +140,7 @@ export function Results() {
           similar patient intelligence.
         </p>
         <Link
-          to="/predict"
+          to="/app/predict"
           className="interactive-lift mt-6 inline-flex rounded-2xl bg-medical-primary px-6 py-3 font-bold text-white transition hover:bg-medical-primary-dark"
         >
           Go to Patient Assessment
@@ -150,12 +155,52 @@ export function Results() {
 
   return (
     <div className="stagger-reveal space-y-6">
+      <section className="interactive-lift premium-surface rounded-3xl p-5 shadow-soft">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-900">Prediction Result Summary</h1>
+            <p className="mt-1 text-sm text-slate-600">
+              Review risk interpretation, care actions, and similar case references.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-600">
+                <CalendarClock className="h-3.5 w-3.5 text-medical-primary" />
+                Generated: {completedAtText}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-600">
+                <Stethoscope className="h-3.5 w-3.5 text-medical-primary" />
+                Diagnosis: {diagnosisText}
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full border border-blue-100 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.09em] text-slate-600">
+                <ClipboardList className="h-3.5 w-3.5 text-medical-primary" />
+                Similar Cases: {similarCases.length}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to="/app/predict"
+              className="interactive-lift inline-flex items-center justify-center rounded-2xl border border-blue-100 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-medical-primary hover:text-medical-primary"
+            >
+              New Prediction
+            </Link>
+            <Link
+              to="/app/history"
+              className="interactive-lift inline-flex items-center justify-center rounded-2xl border border-blue-100 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-medical-primary hover:text-medical-primary"
+            >
+              View History
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <div className="flex flex-wrap items-center justify-end gap-3">
         <button
           type="button"
           onClick={handleDownloadPdf}
           disabled={isDownloadingPdf}
-          className="interactive-lift inline-flex items-center justify-center rounded-2xl border border-medical-primary/30 bg-white px-5 py-2.5 text-sm font-bold text-medical-primary transition hover:border-medical-primary hover:bg-medical-surface disabled:cursor-not-allowed disabled:opacity-70"
+          className="interactive-lift inline-flex items-center justify-center rounded-2xl border border-medical-primary/30 bg-[linear-gradient(180deg,#ffffff_0%,#f2f8ff_100%)] px-5 py-2.5 text-sm font-bold text-medical-primary transition hover:border-medical-primary hover:bg-medical-surface disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isDownloadingPdf ? "Preparing PDF..." : "Download PDF Report"}
         </button>
@@ -180,7 +225,7 @@ export function Results() {
               (factor) => (
                 <span
                   key={factor}
-                  className="rounded-full border border-medical-primary/20 bg-medical-surface px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-medical-primary"
+                  className="rounded-full border border-medical-primary/20 bg-[linear-gradient(180deg,#f4faff_0%,#e8f5ff_100%)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-medical-primary"
                 >
                   {factor}
                 </span>
@@ -215,7 +260,7 @@ export function Results() {
             {(followUpPoints.length > 0 ? followUpPoints : ["No follow-up recommendation provided."]).map(
               (item, index) => (
                 <li key={`${index}-${item}`} className="flex gap-4">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-medical-surface text-sm font-bold text-medical-primary">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-blue-100 bg-[linear-gradient(180deg,#ffffff_0%,#e8f4ff_100%)] text-sm font-bold text-medical-primary">
                     {index + 1}
                   </div>
                   <p className="pt-1 text-slate-700">{item}</p>
@@ -234,7 +279,7 @@ export function Results() {
               (item) => (
                 <li
                   key={item}
-                  className="flex items-start gap-3 rounded-xl border border-slate-200 bg-medical-ice px-3 py-2 text-slate-700 transition duration-300 hover:border-medical-primary/40 hover:bg-white"
+                  className="flex items-start gap-3 rounded-xl border border-blue-100 bg-[linear-gradient(180deg,#f7fbff_0%,#edf6ff_100%)] px-3 py-2 text-slate-700 transition duration-300 hover:border-medical-primary/40 hover:bg-white"
                 >
                   <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-medical-primary" />
                   <span>{item}</span>
@@ -252,7 +297,7 @@ export function Results() {
       >
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-medical-ice text-xs uppercase tracking-[0.09em] text-slate-600">
+            <thead className="border-b border-slate-200 bg-[linear-gradient(180deg,#f7fbff_0%,#edf6ff_100%)] text-xs uppercase tracking-[0.09em] text-slate-600">
               <tr>
                 <th className="px-4 py-3">Patient ID</th>
                 <th className="px-4 py-3">Similarity</th>
@@ -266,7 +311,10 @@ export function Results() {
                   const similarity = parseSimilarity(item);
                   const readmission = item?.metadata?.readmission_30;
                   return (
-                    <tr key={item.id || `case-${index}`} className="border-b border-slate-100">
+                    <tr
+                      key={item.id || `case-${index}`}
+                      className="table-row-float border-b border-slate-100"
+                    >
                       <td className="px-4 py-3 font-semibold text-slate-700">
                         {item.id || `CASE-${index + 1}`}
                       </td>

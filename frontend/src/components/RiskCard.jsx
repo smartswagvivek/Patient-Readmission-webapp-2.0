@@ -31,7 +31,7 @@ export function RiskCard({ riskScore = 0, riskLevel = "Low" }) {
   const strokeOffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <section className="animate-reveal-soft interactive-lift rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+    <section className="animate-reveal-soft interactive-lift premium-surface rounded-3xl p-6 shadow-soft">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500">
@@ -45,7 +45,7 @@ export function RiskCard({ riskScore = 0, riskLevel = "Low" }) {
           </p>
         </div>
         <span
-          className={`rounded-full border px-4 py-1.5 text-sm font-bold ${meta.badge}`}
+          className={`rounded-full border px-4 py-1.5 text-sm font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] ${meta.badge}`}
         >
           {meta.label} Risk
         </span>

@@ -7,7 +7,11 @@ import pino from "pino";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFoundHandler } from "./middleware/notFoundHandler.js";
 import { router as predictRouter } from "./routes/predictRoutes.js";
+import { router as authRouter } from "./routes/authRoutes.js";
+import { router as predictionRouter } from "./routes/predictionRoutes.js";
+import { authenticateToken } from "./middleware/authMiddleware.js";
 import { testDatabaseConnection } from "./models/db.js";
+import { ensureUsersTable, seedDemoUsersIfMissing } from "./models/userModel.js";
 
 const logger = pino({ level: process.env.LOG_LEVEL || "info" });
 
@@ -20,7 +24,10 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "backend" });
 });
 
-app.use("/api/predict", predictRouter);
+app.use("/api/auth", authRouter);
+app.use("/api", authRouter);
+app.use("/api/predict", authenticateToken, predictRouter);
+app.use("/api/predictions", authenticateToken, predictionRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler(logger));
@@ -30,6 +37,8 @@ const port = process.env.PORT || 4000;
 async function startServer() {
   try {
     await testDatabaseConnection();
+    await ensureUsersTable();
+    await seedDemoUsersIfMissing();
     console.log("Database connected successfully");
     logger.info("Database connected successfully");
   } catch (error) {
